@@ -40,7 +40,7 @@
 #include "MK64F12.h"
 #include "fsl_debug_console.h"
 /* TODO: insert other include files here. */
-
+#include "FXOS8700CQ.h"
 
 /* FreeRTOS kernel includes. */
 
@@ -55,10 +55,13 @@ static void my_task(void *pvParameters);
  */
 static void my_task(void *pvParameters)
 {
+	int16_t acc_xyz[3];
+	int16_t mag_xyz[3];
     for (;;)
     {
-        PRINTF("Hello World!\r\n");
-        vTaskSuspend(NULL);
+    	FXOS8700CQ_Read_Accel_Data(I2C0, FXOS8700CQ_DEVICE_ADDRESS, acc_xyz);
+    	FXOS8700CQ_Read_Magnet_Data(I2C0, FXOS8700CQ_DEVICE_ADDRESS, mag_xyz);
+        PRINTF("accel = (%d, %d, %d); magnet = (%d, %d, %d)\r\n", acc_xyz[0], acc_xyz[1], acc_xyz[2], mag_xyz[0], mag_xyz[1], mag_xyz[2]);
     }
 }
 #define my_task_PRIORITY (configMAX_PRIORITIES - 1)
@@ -78,6 +81,13 @@ int main(void) {
     /* Init FSL debug console. */
     BOARD_InitDebugConsole();
 #endif
+    FXOS8700CQ_Init();
+    FXOS8700CQ_Configure_Device();
+    bool fxosFlag = FXOS8700CQ_ReadSensorWhoAmI();
+    if (fxosFlag == true)
+    	PRINTF("FXOS8700CQ found!!");
+    else
+    	PRINTF("FXOS8700CQ not found!!");
 
     if (xTaskCreate(my_task, "my_task", configMINIMAL_STACK_SIZE + 10, NULL, my_task_PRIORITY, NULL) != pdPASS)
 	{

@@ -247,7 +247,7 @@ void FXOS8700CQ_Configure_Device(void)
 uint8_t FXOS8700CQ_Read_Accel_Data(I2C_Type *base, uint8_t device_addr, int16_t *xyz_accel)
 {
 	uint8_t readBuff[7];
-	FXOS8700CQ_ReadAccelRegs(I2C0, FXOS8700CQ_DEVICE_ADDRESS, FXOS8700CQ_STATUS, readBuff, 7);
+	FXOS8700CQ_ReadAccelRegs(I2C0, device_addr, FXOS8700CQ_STATUS, readBuff, 7);
 	xyz_accel[0] = ((int16_t)(((readBuff[1] * 256U) | readBuff[2]))) / 4U;
 	xyz_accel[1] = ((int16_t)(((readBuff[3] * 256U) | readBuff[4]))) / 4U;
 	xyz_accel[2] = ((int16_t)(((readBuff[5] * 256U) | readBuff[6]))) / 4U;
